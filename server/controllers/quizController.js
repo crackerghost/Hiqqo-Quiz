@@ -54,6 +54,25 @@ const updateQuiz = async (req, res) => {
     }
 };
 
+const updateQuestion = async (req, res) => {
+    const { quizId, questionId } = req.params;
+    const { questionText, options, correctAnswer, timeLimit } = req.body;
+    try {
+        const quiz = await findQuizById(quizId);
+        const question = quiz.questions.id(questionId);
+        if (!question) {
+            throw new Error("Question not found");
+        }
+        question.questionText = questionText;
+        question.options = options;
+        question.correctAnswer = correctAnswer;
+        question.timeLimit = timeLimit;
+        await quiz.save();
+        return res.status(200).json({ message: "Question updated successfully!" });
+    } catch (error) {
+        return handleError(error, res);
+    }
+};
 
 // deleteQuiz the quiz
 const deleteQuiz = async (req, res) => {
@@ -120,4 +139,4 @@ const deleteQuestion = async (req, res) => {
     }
 };
 
-module.exports = { quizCreate, updateQuiz, deleteQuiz, createQuestion, deleteQuestion };
+module.exports = { quizCreate, updateQuiz, deleteQuiz, createQuestion, deleteQuestion ,updateQuestion};
