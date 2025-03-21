@@ -26,8 +26,10 @@ function Login() {
       return;
     }
 
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL; // Dynamic base URL
+
     try {
-      const response = await fetch("http://localhost:3000/api/auth/login", {
+      const response = await fetch(`${apiBaseUrl}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -118,9 +120,7 @@ function Login() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 1.6, duration: 0.5 }}
-                className={`w-full ${
-                  loading ? "bg-gray-500 cursor-not-allowed" : "bg-pink-500 hover:bg-pink-700"
-                } text-white p-2 rounded-md transition font-bold`}
+                className={`w-full ${loading ? "bg-gray-500 cursor-not-allowed" : "bg-pink-500 hover:bg-pink-700"} text-white p-2 rounded-md transition font-bold`}
                 disabled={loading}
               >
                 {loading ? "Logging in..." : "Login"}
