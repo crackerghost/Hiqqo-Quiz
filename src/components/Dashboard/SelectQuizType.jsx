@@ -1,45 +1,51 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // For redirection
 import api from "../../utils/axios";
 
 const QuizTypeModal = ({ isOpen, onClose }) => {
   const [selectedQuizType, setSelectedQuizType] = useState("MCQ");
   const [quizTitle, setQuizTitle] = useState("");
+  const [quizDescription, setQuizDescription] = useState(""); // New state for description
   const [error, setError] = useState("");
+  const navigate = useNavigate(); // Hook for navigation
 
   if (!isOpen) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!quizTitle || !selectedQuizType) {
-        setError("Please fill out all fields.");
-        return;
+    if (!quizTitle || !quizDescription || !selectedQuizType) {
+      setError("Please fill out all fields.");
+      return;
+    }
+    setError(""); // Clear error message if validation is successful
+    try {
+      const response = await api.post(
+        "/quiz/create-quiz",
+        { title: quizTitle, description: quizDescription, quizType: selectedQuizType },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      if (response.status === 201) {
+        alert("Quiz created successfully!");
+        setQuizTitle("");
+        setQuizDescription(""); // Reset description
+        // Redirect based on quiz type
+        if (selectedQuizType === "MCQ") {
+          navigate("/createQuiz");
+        } else if (selectedQuizType === "Fill in the Blank") {
+          navigate("/fillQuiz");
+        }
+      } else {
+        setError(response.data.message || "Failed to create quiz. Please try again.");
       }
-      setError(""); // Clear error message if validation is successful
-      try {
-        const response = await api.post(
-          "/quiz/create-quiz",
-          { title: quizTitle, quizType:selectedQuizType },
-          { headers: { "Content-Type": "application/json" } }
-        );
-  
-        if (response.status === 201) {
-          // Show success message
-          alert("Quiz created successful!");
-          setQuizTitle("");
-          // Redirect to next page
-        } else {
-          setError(response.data.message || "Failed to create quiz. Please try again.");
-        } 
-      } catch (error) {
-        console.log("errro in quiz creation", error);
-        setError(error.message);
-      }
+    } catch (error) {
+      console.log("Error in quiz creation", error);
+      setError(error.message);
+    }
   };
 
-  
-
   return (
-    <div className="fixed w-screen z-50 h-screen  inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed w-screen z-50 h-screen inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-8 rounded-lg shadow-lg w-[500px]">
         <h2 className="text-xl font-semibold">Enter quiz title</h2>
         <input
@@ -48,6 +54,15 @@ const QuizTypeModal = ({ isOpen, onClose }) => {
           className="pl-2 m-2 ml-0 border rounded-lg cursor-pointer w-full"
           onChange={(e) => setQuizTitle(e.target.value)}
           value={quizTitle}
+          placeholder="Quiz Title"
+        />
+        <h2 className="text-xl font-semibold">Enter quiz description</h2>
+        <textarea
+          name="quiz-description"
+          className="pl-2 m-2 ml-0 border rounded-lg cursor-pointer w-full h-24"
+          onChange={(e) => setQuizDescription(e.target.value)}
+          value={quizDescription}
+          placeholder="Quiz Description"
         />
         <h2 className="text-xl font-semibold">Select a quiz type</h2>
         <p className="text-gray-500 text-sm">
@@ -99,7 +114,7 @@ const QuizTypeModal = ({ isOpen, onClose }) => {
 
         <div className="flex justify-end space-x-2 mt-4">
           <button
-            onClick={()=>(onClose(false))}
+            onClick={() => onClose(false)}
             className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg"
           >
             Cancel
@@ -121,5 +136,4 @@ const QuizTypeModal = ({ isOpen, onClose }) => {
   );
 };
 
-
-export default QuizTypeModal
+export default QuizTypeModal;
