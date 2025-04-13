@@ -12,6 +12,8 @@ import QuizPreview from "./pages/QuizPreview";
 import Error from "./components/Common/Error";
 import Navbar from "./components/Common/Navbar";
 import Dashboard from "./components/Dashboard/Dashboard";
+import FillBlanks from "./pages/FillBlanks";
+import FillPreview from "./pages/FillPreview";
 import { createContext, useState } from "react";
 
 export const DataProvider = createContext() 
@@ -31,11 +33,14 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/forgot-pass" element={<ForgotPassword />} />
           <Route path="/join" element={<JoinPage />} />
+          <Route path="/fillblanks" element={<FillBlanks/>} />
           <Route path="/quizpage" element={<QuizPage />} />
           <Route path="/createQuiz" element={<QuizCreate />} />
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/preview" element={<QuizPreview />} />
+          <Route path="/fillpreview" element={<FillPreview/>} />
+          
           <Route path="*" element={<Error />} />
         </Routes>
       </div>

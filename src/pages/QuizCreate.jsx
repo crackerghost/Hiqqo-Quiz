@@ -14,6 +14,7 @@ const QuizCreate = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Clear errors when user corrects invalid inputs
     const current = quizData[currentQuestion];
     if (error.type === "question" && current.question.trim()) {
       setError({ type: "", message: "" });
@@ -88,16 +89,19 @@ const QuizCreate = () => {
   const validateCurrentQuestion = () => {
     const current = quizData[currentQuestion];
 
+    // Validate question input
     if (!current.question.trim()) {
       setError({ type: "question", message: "Please enter a question." });
       return false;
     }
 
+    // Validate options
     if (current.options.some((opt) => !opt.trim())) {
       setError({ type: "options", message: "Please fill in all options." });
       return false;
     }
 
+    // Validate answer selection
     if (current.answer === null) {
       setError({ type: "answer", message: "Please select the correct answer." });
       return false;
@@ -108,9 +112,13 @@ const QuizCreate = () => {
   };
 
   const handleNext = () => {
+    // Validate current question before moving to the next
     if (!validateCurrentQuestion()) return;
-    setCurrentQuestion(currentQuestion + 1);
-    setFocusedOption(0);
+
+    if (currentQuestion < numQuestions - 1) {
+      setCurrentQuestion(currentQuestion + 1);
+      setFocusedOption(0);
+    }
   };
 
   const handlePrevious = () => {
@@ -136,12 +144,12 @@ const QuizCreate = () => {
 
   return (
     <div className="min-h-screen bg-white flex flex-col items-center text-gray-800">
-      <div className="mt-8 bg-gray-100 p-6 rounded-3xl shadow-md max-w-4xl w-full">
-        <h1 className="text-3xl font-bold text-center">Create a New Quiz</h1>
+      <div className="mt-10 bg-gray-100 p-8 rounded-3xl shadow-md max-w-xl sm:w-full md:w-[550px] lg:w-[600px] mx-auto">
+        <h1 className="text-2xl font-bold text-center mb-4">Create a New Quiz</h1>
 
         {/* Question Controls */}
-        <div className="mt-6">
-          <label className="block text-xl font-semibold mb-2">
+        <div className="mt-4">
+          <label className="block text-xl font-semibold mb-1">
             Number of Questions
           </label>
           <div className="flex items-center">
@@ -166,8 +174,8 @@ const QuizCreate = () => {
         </div>
 
         {/* Quiz Form */}
-        <form onSubmit={handleSubmit} className="space-y-6 mt-6">
-          <div className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+          <div className="space-y-3">
             <div>
               <label className="block text-xl font-semibold">
                 Question {currentQuestion + 1}
@@ -179,7 +187,7 @@ const QuizCreate = () => {
                 onChange={(e) =>
                   handleQuestionChange(currentQuestion, e.target.value)
                 }
-                className={`w-full p-3 mt-2 rounded-2xl text-gray-800 outline-none border ${
+                className={`w-full p-2 mt-1 rounded-2xl text-gray-800 outline-none border ${
                   error.type === "question"
                     ? "border-red-500"
                     : "border-gray-300"
@@ -189,7 +197,7 @@ const QuizCreate = () => {
             <div>
               <label className="block text-xl font-semibold">Options</label>
               {quizData[currentQuestion].options.map((option, optionIndex) => (
-                <div key={optionIndex} className="mt-2 flex items-center">
+                <div key={optionIndex} className="mt-1 flex items-center">
                   <input
                     type="radio"
                     name={`correct-answer-${currentQuestion}`}
@@ -214,7 +222,7 @@ const QuizCreate = () => {
                       )
                     }
                     onKeyDown={(e) => handleKeyDown(e, optionIndex)}
-                    className={`w-full p-3 rounded-2xl text-gray-800 outline-none border ${
+                    className={`w-full p-2 rounded-2xl text-gray-800 outline-none border ${
                       error.type === "options"
                         ? "border-red-500"
                         : "border-gray-300"
@@ -227,17 +235,17 @@ const QuizCreate = () => {
           </div>
 
           {error.message && (
-            <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            <div className="p-2 bg-red-100 border border-red-400 text-red-700 rounded">
               {error.message}
             </div>
           )}
 
-          <div className="flex justify-between mt-4">
+          <div className="flex justify-between mt-3">
             {currentQuestion > 0 && (
               <button
                 type="button"
                 onClick={handlePrevious}
-                className="bg-gray-500 px-6 py-2 rounded-lg text-white font-semibold hover:bg-gray-600"
+                className="bg-gray-500 px-6 py-2 rounded-xl text-white font-semibold hover:bg-gray-600"
               >
                 Previous
               </button>
@@ -246,14 +254,14 @@ const QuizCreate = () => {
               <button
                 type="button"
                 onClick={handleNext}
-                className="bg-indigo-600 px-6 py-2 rounded-lg text-white font-semibold hover:bg-indigo-700"
+                className="bg-indigo-600 px-6 py-2 rounded-xl text-white font-semibold hover:bg-indigo-700"
               >
                 Next
               </button>
             ) : (
               <button
                 type="submit"
-                className=" px-6 py-2 btn text-white font-semibold mx-auto"
+                className="px-6 py-2 btn text-white font-semibold mx-auto"
               >
                 Generate Quiz Code
               </button>
@@ -263,12 +271,12 @@ const QuizCreate = () => {
 
         {quizCode && (
           <>
-            <div className="mt-8 text-center text-lg font-semibold">
+            <div className="mt-6 text-center text-lg font-semibold">
               <p>Quiz Created! Use this code to access the quiz:</p>
               <p className="text-2xl text-yellow-500">{quizCode}</p>
             </div>
 
-            <div className="text-center mt-4">
+            <div className="text-center mt-3">
               <button
                 onClick={handlePreviewClick}
                 className="bg-blue-600 btn text-white px-6 py-2 rounded-lg hover:bg-blue-700"
